@@ -1,2 +1,2 @@
 # react-adal
-Azure Active Directory (ADAL) support for ReactJS - Cors
+Azure Active Directory (ADAL) support for ReactJS

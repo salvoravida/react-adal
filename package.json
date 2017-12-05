@@ -1,0 +1,36 @@
+{
+  "name": "react-adal",
+  "version": "0.1.15",
+  "description": "Azure Active Directory (ADAL) support for ReactJS",
+  "main": "lib/react-adal.js",
+  "scripts": {
+    "compile": "babel src --out-dir lib",
+    "prepublish": "npm run compile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/salvoravida/react-adal.git"
+  },
+  "keywords": [
+    "adal"
+  ],
+  "author": "salvoravida",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/salvoravida/react-adal/issues"
+  },
+  "homepage": "https://github.com/salvoravida/react-adal#readme",
+  "dependencies": {
+    "babel-eslint": "^8.0.3",
+    "babel-preset-es2015": "^6.24.1",
+    "eslint": "^4.12.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-defaults": "^9.0.0",
+    "eslint-plugin-react": "^7.5.1",
+    "eslint-plugin-jsx-a11y": "^5.0.3",
+    "eslint-plugin-import": "2.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
+  }
+}
