@@ -1,16 +1,13 @@
 import { AuthenticationContext, adalGetToken, adalFetch } from '../src/react-adal';
 
 export const adalConfig = {
-  tenant: '35235325325325',
-  clientId: '4362762373457',
-  //important redirect to http[s]://host
-  redirectUri: window.location.origin,
+  tenant: '14d71d65-f596-4eae-be30-27f079bf8d4b',
+  clientId: '14d71d65-f596-4eae-be30-27f079bf8d4b',
   endpoints: {
-    api: '35325132515',
+    api: '14d71d65-f596-4eae-be30-27f079bf8d4b',
   },
   cacheLocation: 'localStorage',
 };
-
 export const authContext = new AuthenticationContext(adalConfig);
 
 // eslint-disable-next-line
