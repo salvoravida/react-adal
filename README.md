@@ -2,15 +2,13 @@
 Azure Active Directory (ADAL) support for ReactJS
 
 
-#install
+# install
 
 ```
 npm install react-adal
 ```
 
-#how to use
-
-index.js
+# your app index.js
 
 ```javascript
 
@@ -31,7 +29,7 @@ runWithAdal(authContext, () => {
 
 ```
 
-adalConfig.js
+# your app adalConfig.js
 
 ```javascript
 
@@ -59,3 +57,4 @@ export const adalApiFetch = (fetch, url, options) => isProd ? fetch(url, options
 
 
 ```
+
