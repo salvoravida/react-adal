@@ -10,11 +10,6 @@ export const adalConfig = {
 };
 export const authContext = new AuthenticationContext(adalConfig);
 
-// eslint-disable-next-line
-export const adalGetApiToken = () => isProd ? null :
-  adalGetToken(authContext, adalConfig.endpoints.api);
-
-// eslint-disable-next-line
-export const adalApiFetch = (fetch, url, options) => isProd ? fetch(url, options) :
+export const adalApiFetch = (fetch, url, options) =>
   adalFetch(authContext, adalConfig.endpoints.api, fetch, url, options);
 
