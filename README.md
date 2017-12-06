@@ -51,6 +51,25 @@ export const adalApiFetch = (fetch, url, options) =>
 
 use adalApiFetch with your favorite "fetch" in your api call.
 
-That's all.
+# changelog
 
-Enjoy!
+v0.1.15.2
+!fix eslint and packages dep
++update readme
+
+v0.1.15
++first release
++include AdalJS v.1.0.15
+
+# inspired by
+
+https://blog.mastykarz.nl/building-office-365-web-applications-react/
+
+https://medium.com/@adpreg/react-with-redux-app-with-azure-ad-auth-and-net-core-starter-project-88b1bbdb7856
+
+https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols-implicit
+
+
+# credits
+
+That's all. Enjoy!

@@ -1,11 +1,3 @@
-//----------------------------------------------------------------------
-// react-adal v0.15.1  with adalJS v1.0.15
-//
-// Copyright (c) salvoravida
-// All Rights Reserved
-// Apache License 2.0
-//----------------------------------------------------------------------
-
 import AuthenticationContext_ from './adal';
 
 export const AuthenticationContext = AuthenticationContext_;
@@ -14,6 +6,7 @@ export function adalGetToken(authContext, resourceGuiId) {
   return new Promise((resolve, reject) => {
     authContext.acquireToken(resourceGuiId, (message, token, msg) => {
       if (!msg) resolve(token);
+      // eslint-disable-next-line
       else reject({ message, msg });
     });
   });
