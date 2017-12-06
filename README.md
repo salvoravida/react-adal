@@ -52,7 +52,7 @@ export const adalApiFetch = (fetch, url, options) =>
 use adalApiFetch with your favorite "fetch" in your api call.
 
 # changelog
-
+```
 v0.1.15.2
 !fix eslint and packages dep
 +update readme
@@ -60,7 +60,7 @@ v0.1.15.2
 v0.1.15
 +first release
 +include AdalJS v.1.0.15
-
+```
 # inspired by
 
 https://blog.mastykarz.nl/building-office-365-web-applications-react/
