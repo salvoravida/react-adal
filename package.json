@@ -12,7 +12,13 @@
     "url": "git+https://github.com/salvoravida/react-adal.git"
   },
   "keywords": [
-    "adal"
+    "react",
+    "implicit",
+    "js",
+    "AAD",
+    "adal",
+    "oauth",
+    "azure"
   ],
   "author": "salvoravida",
   "license": "MIT",
