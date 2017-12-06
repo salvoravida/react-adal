@@ -53,8 +53,9 @@ use adalApiFetch with your favorite "fetch" in your api call.
 
 # changelog
 ```
-v0.2.15
+v0.3.15
 !fix eslint and packages dep
+!fix devDependencies
 +update readme
 
 v0.1.15
