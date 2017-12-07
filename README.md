@@ -9,11 +9,33 @@ index.js
 
 ```javascript
 
-import App from './App';
-import { runWithAdal } from 'react-adal';
+import { runWithAdal } from './react-adal';
 import { authContext } from './adalConfig';
 
 runWithAdal(authContext, () => {
+
+  // eslint-disable-next-line
+  require('./indexApp.js');
+
+});
+
+```
+
+This index wrap is needed because ADAL use iframes for token silent refresh,
+and we do not want to have duplicated ReactApp started on iframes too!
+
+indexApp.js (your real app index as it already is)
+
+```javascript
+
+import 'babel-polyfill';
+import 'matchmedia-polyfill';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import 'normalize.css';
+import { store } from './store';
+import App from './App';
 
   ReactDOM.render(
     <Provider store={store}>
@@ -21,8 +43,6 @@ runWithAdal(authContext, () => {
     </Provider>,
     document.getElementById('root'),
   );
-
-});
 
 ```
 
@@ -45,7 +65,6 @@ export const authContext = new AuthenticationContext(adalConfig);
 
 export const adalApiFetch = (fetch, url, options) =>
   adalFetch(authContext, adalConfig.endpoints.api, fetch, url, options);
-
 
 ```
 
