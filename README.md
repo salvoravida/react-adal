@@ -1,5 +1,5 @@
 # react-adal
-Azure Active Directory (ADAL) support for ReactJS
+Azure Active Directory Library (ADAL) support for ReactJS
 
 ```
 npm install react-adal
@@ -9,7 +9,7 @@ index.js
 
 ```javascript
 
-import { runWithAdal } from './react-adal';
+import { runWithAdal } from 'react-adal';
 import { authContext } from './adalConfig';
 
 runWithAdal(authContext, () => {
