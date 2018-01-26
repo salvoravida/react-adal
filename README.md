@@ -50,7 +50,7 @@ adalConfig.js
 
 ```javascript
 
-import { AuthenticationContext, adalGetToken, adalFetch } from 'react-adal';
+import { AuthenticationContext, adalFetch } from 'react-adal';
 
 export const adalConfig = {
   tenant: '14d71d65-f596-4eae-be30-27f079bf8d4b',
