@@ -3,6 +3,7 @@
   "version": "0.3.15",
   "description": "Azure Active Directory (ADAL) support for ReactJS",
   "main": "lib/react-adal.js",
+  "types": "lib/react-adal.d.ts",
   "scripts": {
     "compile": "babel src --out-dir lib",
     "prepublish": "npm run compile"
