@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------
-// AdalJS v1.0.16
+// AdalJS v1.0.17
 // @preserve Copyright (c) Microsoft Open Technologies, Inc.
 // All Rights Reserved
 // Apache License 2.0
@@ -191,6 +191,7 @@ var AuthenticationContext = (function () {
 
     if (typeof window !== 'undefined') {
         window.Logging = {
+            piiLoggingEnabled: false,
             level: 0,
             log: function (message) { }
         };
@@ -511,7 +512,7 @@ var AuthenticationContext = (function () {
         urlNavigate = urlNavigate + '&prompt=none';
         urlNavigate = this._addHintParameters(urlNavigate);
         this.registerCallback(expectedState, resource, callback);
-        this.verbose('Navigate to:' + urlNavigate);
+        this.verbosePii('Navigate to:' + urlNavigate);
         frameHandle.src = 'about:blank';
         this._loadFrameTimeout(urlNavigate, 'adalRenewFrame' + resource, resource);
 
@@ -540,7 +541,7 @@ var AuthenticationContext = (function () {
         urlNavigate = this._addHintParameters(urlNavigate);
         urlNavigate += '&nonce=' + encodeURIComponent(this._idTokenNonce);
         this.registerCallback(expectedState, this.config.clientId, callback);
-        this.verbose('Navigate to:' + urlNavigate);
+        this.verbosePii('Navigate to:' + urlNavigate);
         frameHandle.src = 'about:blank';
         this._loadFrameTimeout(urlNavigate, 'adalIdTokenFrame', this.config.clientId);
     };
@@ -797,7 +798,7 @@ var AuthenticationContext = (function () {
      */
     AuthenticationContext.prototype.promptUser = function (urlNavigate) {
         if (urlNavigate) {
-            this.info('Navigate to:' + urlNavigate);
+            this.infoPii('Navigate to:' + urlNavigate);
             window.location.replace(urlNavigate);
         } else {
             this.info('Navigate url is empty');
@@ -874,7 +875,7 @@ var AuthenticationContext = (function () {
             urlNavigate = this.instance + tenant + '/oauth2/logout?' + logout;
         }
 
-        this.info('Logout navigate to: ' + urlNavigate);
+        this.infoPii('Logout navigate to: ' + urlNavigate);
         this.promptUser(urlNavigate);
     };
 
@@ -923,21 +924,32 @@ var AuthenticationContext = (function () {
      * @ignore
      */
     AuthenticationContext.prototype._addHintParameters = function (urlNavigate) {
-        // include hint params only if upn is present
-        if (this._user && this._user.profile && this._user.profile.hasOwnProperty('upn')) {
+        //If you don�t use prompt=none, then if the session does not exist, there will be a failure.
+        //If sid is sent alongside domain or login hints, there will be a failure since request is ambiguous.
+        //If sid is sent with a prompt value other than none or attempt_none, there will be a failure since the request is ambiguous.
 
-            // don't add login_hint twice if user provided it in the extraQueryParameter value
-            if (!this._urlContainsQueryStringParameter("login_hint", urlNavigate)) {
-                // add login_hint
-                urlNavigate += '&login_hint=' + encodeURIComponent(this._user.profile.upn);
+        if (this._user && this._user.profile) {
+            if (this._user.profile.sid && urlNavigate.indexOf('&prompt=none') !== -1) {
+                // don't add sid twice if user provided it in the extraQueryParameter value
+                if (!this._urlContainsQueryStringParameter("sid", urlNavigate)) {
+                    // add sid
+                    urlNavigate += '&sid=' + encodeURIComponent(this._user.profile.sid);
+                }
+            }
+            else if (this._user.profile.upn) {
+                // don't add login_hint twice if user provided it in the extraQueryParameter value
+                if (!this._urlContainsQueryStringParameter("login_hint", urlNavigate)) {
+                    // add login_hint
+                    urlNavigate += '&login_hint=' + encodeURIComponent(this._user.profile.upn);
+                }
+                // don't add domain_hint twice if user provided it in the extraQueryParameter value
+                if (!this._urlContainsQueryStringParameter("domain_hint", urlNavigate) && this._user.profile.upn.indexOf('@') > -1) {
+                    var parts = this._user.profile.upn.split('@');
+                    // local part can include @ in quotes. Sending last part handles that.
+                    urlNavigate += '&domain_hint=' + encodeURIComponent(parts[parts.length - 1]);
+                }
             }
 
-            // don't add domain_hint twice if user provided it in the extraQueryParameter value
-            if (!this._urlContainsQueryStringParameter("domain_hint", urlNavigate) && this._user.profile.upn.indexOf('@') > -1) {
-                var parts = this._user.profile.upn.split('@');
-                // local part can include @ in quotes. Sending last part handles that.
-                urlNavigate += '&domain_hint=' + encodeURIComponent(parts[parts.length - 1]);
-            }
         }
 
         return urlNavigate;
@@ -1158,7 +1170,7 @@ var AuthenticationContext = (function () {
 
         // Record error
         if (requestInfo.parameters.hasOwnProperty(this.CONSTANTS.ERROR_DESCRIPTION)) {
-            this.info('Error :' + requestInfo.parameters.error + '; Error description:' + requestInfo.parameters[this.CONSTANTS.ERROR_DESCRIPTION]);
+            this.infoPii('Error :' + requestInfo.parameters.error + '; Error description:' + requestInfo.parameters[this.CONSTANTS.ERROR_DESCRIPTION]);
             this._saveItem(this.CONSTANTS.STORAGE.ERROR, requestInfo.parameters.error);
             this._saveItem(this.CONSTANTS.STORAGE.ERROR_DESCRIPTION, requestInfo.parameters[this.CONSTANTS.ERROR_DESCRIPTION]);
 
@@ -1815,8 +1827,13 @@ var AuthenticationContext = (function () {
      * @param {string} message  -  Message to log.
      * @param {string} error  -  Error to log.
      */
-    AuthenticationContext.prototype.log = function (level, message, error) {
+    AuthenticationContext.prototype.log = function (level, message, error, containsPii) {
+
         if (level <= Logging.level) {
+
+            if (!Logging.piiLoggingEnabled && containsPii)
+                return;
+
             var timestamp = new Date().toUTCString();
             var formattedMessage = '';
 
@@ -1867,11 +1884,43 @@ var AuthenticationContext = (function () {
     };
 
     /**
+     * Logs Pii messages when Logging Level is set to 0 and window.piiLoggingEnabled is set to true.
+     * @param {string} message  -  Message to log.
+     * @param {string} error  -  Error to log.
+     */
+    AuthenticationContext.prototype.errorPii = function (message, error) {
+        this.log(this.CONSTANTS.LOGGING_LEVEL.ERROR, message, error, true);
+    };
+
+    /**
+     * Logs  Pii messages when Logging Level is set to 1 and window.piiLoggingEnabled is set to true.
+     * @param {string} message  -  Message to log.
+     */
+    AuthenticationContext.prototype.warnPii = function (message) {
+        this.log(this.CONSTANTS.LOGGING_LEVEL.WARN, message, null, true);
+    };
+
+    /**
+     * Logs messages when Logging Level is set to 2 and window.piiLoggingEnabled is set to true.
+     * @param {string} message  -  Message to log.
+     */
+    AuthenticationContext.prototype.infoPii = function (message) {
+        this.log(this.CONSTANTS.LOGGING_LEVEL.INFO, message, null, true);
+    };
+
+    /**
+     * Logs messages when Logging Level is set to 3 and window.piiLoggingEnabled is set to true.
+     * @param {string} message  -  Message to log.
+     */
+    AuthenticationContext.prototype.verbosePii = function (message) {
+        this.log(this.CONSTANTS.LOGGING_LEVEL.VERBOSE, message, null, true);
+    };
+    /**
      * Returns the library version.
      * @ignore
      */
     AuthenticationContext.prototype._libVersion = function () {
-        return '1.0.16';
+        return '1.0.17';
     };
 
     /**
