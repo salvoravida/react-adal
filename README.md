@@ -12,12 +12,14 @@ index.js
 import { runWithAdal } from 'react-adal';
 import { authContext } from './adalConfig';
 
+const DO_NOT_LOGIN = false;
+
 runWithAdal(authContext, () => {
 
   // eslint-disable-next-line
   require('./indexApp.js');
 
-});
+},DO_NOT_LOGIN);
 
 ```
 
@@ -50,7 +52,7 @@ adalConfig.js
 
 ```javascript
 
-import { AuthenticationContext, adalFetch } from 'react-adal';
+import { AuthenticationContext, adalFetch, withAdalLogin } from '../src/react-adal';
 
 export const adalConfig = {
   tenant: '14d71d65-f596-4eae-be30-27f079bf8d4b',
@@ -66,12 +68,37 @@ export const authContext = new AuthenticationContext(adalConfig);
 export const adalApiFetch = (fetch, url, options) =>
   adalFetch(authContext, adalConfig.endpoints.api, fetch, url, options);
 
+export const withAdalLoginApi = withAdalLogin(authContext, adalConfig.endpoints.api);
+
 ```
 
 use adalApiFetch with your favorite "fetch" in your api call.
 
+# withAdalLoginApi HOC
+
+change DO_NOT_LOGIN to true on index.js to stop login on index.js
+
+```javascript
+
+import MyPage from './myPageComponent';
+import Loading from './Loading';
+import ErrorPage from './ErrorPage';
+
+const MyProtectedPage = withAdalLoginApi(MyPage, () => <Loading />, (error) => <ErrorPage error={error}/>);
+
+<Route 
+   path="/onlyLoggedUsers"
+   render={ ()=> <MyProtectedPage /> } 
+/>
+
+```
 # changelog
 ```
+v0.4.17
++update adal.js to 1.0.17
++added withAdalLogin HOC for login only on a single Route
++added example for single route login
+
 v0.3.15
 !fix eslint and packages dep
 !fix devDependencies
