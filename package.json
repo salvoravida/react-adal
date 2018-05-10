@@ -3,6 +3,7 @@
   "version": "0.4.18",
   "description": "Azure Active Directory (ADAL) support for ReactJS",
   "main": "lib/react-adal.js",
+  "types": "lib/react-adal.d.ts",
   "scripts": {
     "compile": "cross-env NODE_ENV=production babel src --out-dir lib",
     "prepublish": "npm run compile"
