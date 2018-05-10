@@ -94,6 +94,10 @@ const MyProtectedPage = withAdalLoginApi(MyPage, () => <Loading />, (error) => <
 ```
 # changelog
 ```
+v0.4.18
+!adalFetch options fix
++es5 lib
+
 v0.4.17
 +update adal.js to 1.0.17
 +added withAdalLogin HOC for login only on a single Route
