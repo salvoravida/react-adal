@@ -40,7 +40,7 @@ export function adalFetch(authContext, resourceGuiId, fetch, url, options) {
     const o = options || {};
     if (!o.headers) o.headers = {};
     o.headers.Authorization = `Bearer ${token}`;
-    return fetch(url, options);
+    return fetch(url, o);
   });
 }
 
