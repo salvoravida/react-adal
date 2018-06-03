@@ -28,7 +28,8 @@
   "homepage": "https://github.com/salvoravida/react-adal#readme",
   "dependencies": {},
   "peerDependencies": {
-    "react": "^0.14.0 || ^15.0.0 || ^16.0.0"
+    "react": "^0.14.0 || ^15.0.0 || ^16.0.0",
+    "adal-angular": "^1.0.17"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
