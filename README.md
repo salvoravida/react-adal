@@ -52,27 +52,29 @@ adalConfig.js
 
 ```javascript
 
-import { AuthenticationContext, adalFetch, withAdalLogin } from 'react-adal';
+import { withAdalLogin } from 'react-adal';
+import * as AuthenticationContext from 'adal-angular';
 
-export const adalConfig = {
+
+export const authContext = new AuthenticationContext({
   tenant: '14d71d65-f596-4eae-be30-27f079bf8d4b',
   clientId: '14d71d65-f596-4eae-be30-27f079bf8d4b',
   endpoints: {
     api: '14d71d65-f596-4eae-be30-27f079bf8d4b',
   },
   cacheLocation: 'localStorage',
-};
+});
 
-export const authContext = new AuthenticationContext(adalConfig);
+const resource: string = '9eced824-e4db-436e-ad99-82391d4b9f25';
 
-export const adalApiFetch = (fetch, url, options) =>
-  adalFetch(authContext, adalConfig.endpoints.api, fetch, url, options);
-
-export const withAdalLoginApi = withAdalLogin(authContext, adalConfig.endpoints.api);
+export const withAdalLoginApi = withAdalLogin(authContext, resource);
 
 ```
 
-use adalApiFetch with your favorite "fetch" in your api call.
+Add the token to the header with:
+```javascript
+const token = authContext.getCachedToken(authContext.config.clientId);
+```
 
 # withAdalLoginApi HOC
 

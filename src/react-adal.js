@@ -1,6 +1,6 @@
 // eslint-disable-next-line
 import React from 'react';
-import AuthenticationContext_ from './adal';
+import AuthenticationContext_ from 'adal-angular';
 
 export const AuthenticationContext = AuthenticationContext_;
 
@@ -35,15 +35,6 @@ export function runWithAdal(authContext, app, doNotLogin) {
   }
 }
 
-export function adalFetch(authContext, resourceGuiId, fetch, url, options) {
-  return adalGetToken(authContext, resourceGuiId).then((token) => {
-    const o = options || {};
-    if (!o.headers) o.headers = {};
-    o.headers.Authorization = `Bearer ${token}`;
-    return fetch(url, o);
-  });
-}
-
 // eslint-disable-next-line
 export const withAdalLogin = (authContext, resourceId) => {
   // eslint-disable-next-line
@@ -62,7 +53,7 @@ export const withAdalLogin = (authContext, resourceId) => {
           .then(() => this.setState({ logged: true }))
           .catch((error) => {
             const { msg } = error;
-            console.log(error);
+            // console.log(error);
             if (msg === 'login required') {
               authContext.login();
             } else {
