@@ -1,3 +1,17 @@
+<p align="center">
+    <img alt="react-adal" src="https://i.postimg.cc/Xvg09cyT/react-adal.logo.png">
+</p>
+
+<p align="center">
+Azure Active Directory Library (ADAL) support for <a href="https://facebook.github.io/react">React</a>
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/react-adal"><img src="https://img.shields.io/npm/v/react-adal.svg?style=flat-square"></a>
+  <a href="https://www.npmjs.com/package/react-adal"><img src="https://img.shields.io/npm/dm/react-adal.svg?style=flat-square"></a>
+  <a href="https://travis-ci.org/reach/router"><img src="https://img.shields.io/travis/react-adal/master.svg?style=flat-square"></a>
+</p>
+
 # react-adal
 Azure Active Directory Library (ADAL) support for ReactJS
 
