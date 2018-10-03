@@ -125,6 +125,13 @@ v0.1.15
 +first release
 +include AdalJS v.1.0.15
 ```
+# tutorials from the web
+
+https://itnext.io/a-memo-on-how-to-implement-azure-ad-authentication-using-react-and-net-core-2-0-3fe9bfdf9f36
+
+https://medium.com/@dmitrii.korolev1/react-adal-typescript-pnp-sp-93ef69eddd18
+
+
 # inspired by
 
 https://blog.mastykarz.nl/building-office-365-web-applications-react/
