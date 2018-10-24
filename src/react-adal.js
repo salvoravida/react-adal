@@ -39,7 +39,7 @@ export function adalFetch(authContext, resourceGuiId, fetch, url, options) {
   return adalGetToken(authContext, resourceGuiId).then((token) => {
     const o = options || {};
     if (!o.headers) o.headers = {};
-    o.headers.Authorization = `Bearer ${token}`;
+    o.headers.append("Authorization", `Bearer ${token}`)
     return fetch(url, o);
   });
 }
