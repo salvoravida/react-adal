@@ -4,10 +4,12 @@ import AuthenticationContext_ from './adal';
 
 export const AuthenticationContext = AuthenticationContext_;
 
-export function adalGetToken(authContext, resourceGuiId) {
+export function adalGetToken(authContext, resourceGuiId, callback) {
   return new Promise((resolve, reject) => {
     authContext.acquireToken(resourceGuiId, (message, token, msg) => {
       if (!msg) resolve(token);
+      // Default to redirect for multi-factor authentication, but allow using popup if a callback is provided
+      else if (message.includes('AADSTS50076') || message.includes('AADSTS50079')) callback ? authContext.acquireTokenPopup(resourceGuiId, callback) : authContext.acquireTokenRedirect(resourceGuiId);
       // eslint-disable-next-line
       else reject({ message, msg });
     });
