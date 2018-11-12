@@ -42,13 +42,9 @@ and we do not want to have duplicated ReactApp started on iframes too!
 indexApp.js (your real app index as it already is)
 
 ```javascript
-
-import 'babel-polyfill';
-import 'matchmedia-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import 'normalize.css';
 import { store } from './store';
 import App from './App';
 
@@ -107,6 +103,9 @@ const MyProtectedPage = withAdalLoginApi(MyPage, () => <Loading />, (error) => <
 ```
 # changelog
 ```
+v0.4.19
++support MFA redirect - merged pr
+
 v0.4.18
 !adalFetch options fix
 +es5 lib
@@ -140,6 +139,9 @@ https://medium.com/@adpreg/react-with-redux-app-with-azure-ad-auth-and-net-core-
 
 https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols-implicit
 
+
+# MS adal.js
+https://github.com/AzureAD/azure-activedirectory-library-for-js
 
 # credits
 
