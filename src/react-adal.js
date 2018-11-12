@@ -9,7 +9,24 @@ export function adalGetToken(authContext, resourceGuiId) {
     authContext.acquireToken(resourceGuiId, (message, token, msg) => {
       if (!msg) resolve(token);
       // eslint-disable-next-line
-      else reject({ message, msg });
+      else {
+        // eslint-disable-next-line
+        if (msg === 'login required') {
+          // eslint-disable-next-line
+          const err = authContext._getItem(authContext.CONSTANTS.STORAGE.ERROR) || '';
+          //infinite loop access_denied
+          if (err.trim().length > 0 && err.trim() !== msg) {
+            // eslint-disable-next-line
+            reject({ message: authContext._getItem(authContext.CONSTANTS.STORAGE.LOGIN_ERROR), msg: err.trim() });
+          } else {
+            // eslint-disable-next-line
+              reject({ message, msg });
+          }
+        } else {
+          // eslint-disable-next-line
+          reject({ message, msg });
+        }
+      }
     });
   });
 }
