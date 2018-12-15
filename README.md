@@ -102,10 +102,7 @@ const MyProtectedPage = withAdalLoginApi(MyPage, () => <Loading />, (error) => <
 ```
 # changelog
 ```
-v0.4.21
-!fetch options.headers instance of Headers 
-
-v0.4.20
+v0.4.22
 !support old sid #issue 7
 !withAdalLogin HOC componentWillMount deprecated removed
 !withAdalLogin HOC check mounted before setState

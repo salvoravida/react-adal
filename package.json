@@ -1,6 +1,6 @@
 {
   "name": "react-adal",
-  "version": "0.4.21",
+  "version": "0.4.22",
   "description": "Azure Active Directory (ADAL) support for ReactJS",
   "main": "lib/react-adal.js",
   "scripts": {
@@ -33,7 +33,7 @@
   "homepage": "https://github.com/salvoravida/react-adal#readme",
   "dependencies": {},
   "peerDependencies": {
-    "react": "^0.14.0 || ^15.0.0 || ^16.0.0"
+    "react": "^15.0.0 || ^16.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
