@@ -57,12 +57,8 @@ export function runWithAdal(authContext, app, doNotLogin) {
 export function adalFetch(authContext, resourceGuiId, fetch, url, options) {
   return adalGetToken(authContext, resourceGuiId).then((token) => {
     const o = options || {};
-    if (!o.headers) o.headers = new Headers();
-    if (typeof o.append === 'function') {
-      o.headers.append('Authorization', `Bearer ${token}`);
-    } else {
-      o.headers.Authorization = `Bearer ${token}`;
-    }
+    if (!o.headers) o.headers = {};
+    o.headers.append("Authorization", `Bearer ${token}`)
     return fetch(url, o);
   });
 }
