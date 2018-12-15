@@ -39,8 +39,7 @@ runWithAdal(authContext, () => {
 This index wrap is needed because ADAL use iframes for token silent refresh,
 and we do not want to have duplicated ReactApp started on iframes too!
 
-indexApp.js (your real app index as it already is)
-
+indexApp.js (your real app index as it already is - example below)
 ```javascript
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -103,6 +102,11 @@ const MyProtectedPage = withAdalLoginApi(MyPage, () => <Loading />, (error) => <
 ```
 # changelog
 ```
+v0.4.20
+!support old sid #issue 7
+!withAdalLogin HOC componentWillMount deprecated removed
+!withAdalLogin HOC check mounted before setState
+
 v0.4.19
 +support MFA redirect - merged pr
 
