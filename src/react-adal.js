@@ -74,21 +74,33 @@ export const withAdalLogin = (authContext, resourceId) => {
           logged: false,
           error: null,
         };
-      }
 
-      componentDidMount = () => {
-        this.mounted = true;
         adalGetToken(authContext, resourceId)
-          .then(() => this.mounted && this.setState({ logged: true }))
+          .then(() => {
+            if (this.mounted) {
+              this.setState({ logged: true });
+            } else {
+              this.todoSetState = { logged: true };
+            }
+          })
           .catch((error) => {
             const { msg } = error;
             console.log(error);  // eslint-disable-line
             if (msg === 'login required') {
               authContext.login();
+            } else if (this.mounted) {
+              this.setState({ error });
             } else {
-              this.mounted && this.setState({ error });
+              this.todoSetState = { error };
             }
           });
+      }
+
+      componentDidMount = () => {
+        this.mounted = true;
+        if (this.todoSetState) {
+          this.setState(this.todoSetState);
+        }
       };
 
       componentWillUnmount = () => {
