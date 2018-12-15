@@ -4,18 +4,30 @@ import AuthenticationContext_ from './adal';
 
 export const AuthenticationContext = AuthenticationContext_;
 
+const redirectMessages = [
+  'AADSTS16002', // old sid - https://github.com/salvoravida/react-adal/issues/46
+  'AADSTS50076', // MFA support - https://github.com/salvoravida/react-adal/pull/45
+  'AADSTS50079', // MFA support
+];
+
+function shouldAcquireNewToken(message) {
+  return redirectMessages.reduce((a, v) => a || message.includes(v), false);
+}
+
 export function adalGetToken(authContext, resourceGuiId, callback) {
   return new Promise((resolve, reject) => {
     authContext.acquireToken(resourceGuiId, (message, token, msg) => {
       if (!msg) {
         resolve(token);
       } else
-      if (message.includes('AADSTS50076') || message.includes('AADSTS50079')) {
-        // Default to redirect for multi-factor authentication,
+      if (shouldAcquireNewToken(message)) {
+        // Default to redirect for multi-factor authentication
         // but allow using popup if a callback is provided
-        callback ? authContext.acquireTokenPopup(resourceGuiId, callback)
-          : authContext.acquireTokenRedirect(resourceGuiId);
-
+        if (callback) {
+          authContext.acquireTokenPopup(resourceGuiId, callback);
+        } else {
+          authContext.acquireTokenRedirect(resourceGuiId);
+        }
       } else reject({ message, msg });  // eslint-disable-line
     });
   });
