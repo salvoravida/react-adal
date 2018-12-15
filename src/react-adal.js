@@ -34,14 +34,14 @@ export function adalGetToken(authContext, resourceGuiId, callback) {
 }
 
 export function runWithAdal(authContext, app, doNotLogin) {
-  //it must run in iframe to for refreshToken (parsing hash and get token)
+  //it must run in iframe too for refreshToken (parsing hash and get token)
   authContext.handleWindowCallback();
 
   //prevent iframe double app !!!
   if (window === window.parent) {
     if (!authContext.isCallback(window.location.hash)) {
-      if (!authContext.getCachedToken(authContext.config.clientId) ||
-          !authContext.getCachedUser()) {
+      if (!authContext.getCachedToken(authContext.config.clientId)
+          || !authContext.getCachedUser()) {
         if (doNotLogin) {
           app();
         } else {
@@ -81,6 +81,7 @@ export const withAdalLogin = (authContext, resourceId) => {
           .then(() => this.setState({ logged: true }))
           .catch((error) => {
             const { msg } = error;
+            // eslint-disable-next-line
             console.log(error);
             if (msg === 'login required') {
               authContext.login();
@@ -91,8 +92,9 @@ export const withAdalLogin = (authContext, resourceId) => {
       };
 
       render() {
-        if (this.state.logged) return <WrappedComponent {...this.props} />;
-        if (this.state.error) return typeof renderError === 'function' ? renderError(this.state.error) : null;
+        const { logged, error } = this.state;
+        if (logged) return <WrappedComponent {...this.props} />;
+        if (error) return typeof renderError === 'function' ? renderError(error) : null;
         return typeof renderLoading === 'function' ? renderLoading() : null;
       }
     };
