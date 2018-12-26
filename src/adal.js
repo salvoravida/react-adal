@@ -1683,6 +1683,7 @@ var AuthenticationContext = (function () {
                 var ifr = document.createElement('iframe');
                 ifr.setAttribute('id', iframeId);
                 ifr.setAttribute('aria-hidden', 'true');
+                ifr.style.display = 'none';
                 ifr.style.visibility = 'hidden';
                 ifr.style.position = 'absolute';
                 ifr.style.width = ifr.style.height = ifr.borderWidth = '0px';
