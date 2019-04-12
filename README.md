@@ -16,6 +16,8 @@ Azure Active Directory Library (ADAL) support for ReactJS
 
 ```
 npm install react-adal
+npm install store
+npm install react-redux
 ```
 
 index.js
@@ -44,7 +46,7 @@ indexApp.js (your real app index as it already is - example below)
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { store } from './store';
+import { store } from 'store';
 import App from './App';
 
   ReactDOM.render(
