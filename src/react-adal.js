@@ -34,6 +34,11 @@ export function adalGetToken(authContext, resourceGuiId, callback) {
 }
 
 export function runWithAdal(authContext, app, doNotLogin) {
+  //SSR support
+  if (typeof window === 'undefined') {
+    if (doNotLogin) app();
+    return;
+  }
   //it must run in iframe too for refreshToken (parsing hash and get token)
   authContext.handleWindowCallback();
 
