@@ -42,6 +42,9 @@ export function runWithAdal(authContext, app, doNotLogin) {
   //it must run in iframe too for refreshToken (parsing hash and get token)
   authContext.handleWindowCallback();
 
+  // Clear the resource cache on new login
+  authContext.invalidateResourceTokens();
+
   //prevent iframe double app !!!
   if (window === window.parent) {
     if (!authContext.isCallback(window.location.hash)) {
