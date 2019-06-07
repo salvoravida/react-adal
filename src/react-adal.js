@@ -11,7 +11,7 @@ const redirectMessages = [
 ];
 
 function shouldAcquireNewToken(message) {
-  return redirectMessages.reduce((a, v) => a || message.includes(v), false);
+  return redirectMessages.some((v)=>(message.indexOf(v)!==-1));
 }
 
 export function adalGetToken(authContext, resourceGuiId, callback) {
