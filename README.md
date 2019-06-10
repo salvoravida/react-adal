@@ -102,6 +102,11 @@ const MyProtectedPage = withAdalLoginApi(MyPage, () => <Loading />, (error) => <
 ```
 # changelog
 ```
+v0.4.24
++upgrade to babel 7
++SSR support
++fix ie10
+
 v0.4.22
 !support old sid #issue 7
 !withAdalLogin HOC componentWillMount deprecated removed

@@ -2,7 +2,10 @@
 import React from 'react';
 import AuthenticationContext_ from './adal';
 
-export const AuthenticationContext = AuthenticationContext_;
+const isSSR = typeof window === 'undefined';
+
+//fake context on SSR
+export const AuthenticationContext = isSSR? ()=>{} : AuthenticationContext_;
 
 const redirectMessages = [
   'AADSTS16002', // old sid - https://github.com/salvoravida/react-adal/issues/46
@@ -35,7 +38,7 @@ export function adalGetToken(authContext, resourceGuiId, callback) {
 
 export function runWithAdal(authContext, app, doNotLogin) {
   //SSR support
-  if (typeof window === 'undefined') {
+  if (isSSR) {
     if (doNotLogin) app();
     return;
   }
