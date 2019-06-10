@@ -1,6 +1,6 @@
 // eslint-disable-next-line
 import React from 'react';
-import AuthenticationContext_ from './adal';
+import AuthenticationContext_ from './adal.mod';
 
 const isSSR = typeof window === 'undefined';
 
@@ -44,6 +44,9 @@ export function runWithAdal(authContext, app, doNotLogin) {
   }
   //it must run in iframe too for refreshToken (parsing hash and get token)
   authContext.handleWindowCallback();
+
+  // Clear the resource cache on new login
+  authContext.invalidateResourceTokens();
 
   //prevent iframe double app !!!
   if (window === window.parent) {
