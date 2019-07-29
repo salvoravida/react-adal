@@ -4,6 +4,8 @@
   "description": "Azure Active Directory (ADAL) support for ReactJS",
   "main": "lib/react-adal.js",
   "scripts": {
+    "prestart": "npm run build",
+    "start": "parcel sample/index.html",
     "build": "cross-env NODE_ENV=production babel src --out-dir lib",
     "prepare": "npm run build",
     "prepublishOnly": "npm run build"
@@ -39,18 +41,19 @@
   "devDependencies": {
     "@babel/cli": "^7.5.0",
     "@babel/core": "^7.5.4",
+    "@babel/plugin-proposal-class-properties": "^7.5.0",
     "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.5.4",
     "@babel/preset-react": "^7.0.0",
     "@babel/runtime-corejs2": "^7.5.4",
-    "@babel/plugin-proposal-class-properties": "^7.5.0",
     "cross-env": "^5.2.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-config-defaults": "^9.0.0",
     "eslint-plugin-import": "^2.18.0",
-    "eslint-plugin-react": "^7.14.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.14.2",
+    "parcel-bundler": "^1.12.3",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   }
