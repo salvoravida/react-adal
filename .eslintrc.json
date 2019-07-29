@@ -16,6 +16,8 @@
     "no-unused-vars": "warn",
     "no-unused-expressions": 0,
     "spaced-comment": 0,
-    "react/jsx-filename-extension": 0
+    "react/jsx-filename-extension": 0,
+    "react/prop-types": 0,
+    "consistent-return": 0
   }
 }
