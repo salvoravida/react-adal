@@ -1,20 +1,20 @@
 // eslint-disable-next-line
-import React from 'react';
-import AuthenticationContext_ from './adal';
+import React from "react";
+import AuthenticationContext_ from "./adal";
 
-const isSSR = typeof window === 'undefined';
+const isSSR = typeof window === "undefined";
 
-//fake context on SSR
-export const AuthenticationContext = isSSR? ()=>{} : AuthenticationContext_;
+// fake context on SSR
+export const AuthenticationContext = isSSR ? () => {} : AuthenticationContext_;
 
 const redirectMessages = [
-  'AADSTS16002', // old sid - https://github.com/salvoravida/react-adal/issues/46
-  'AADSTS50076', // MFA support - https://github.com/salvoravida/react-adal/pull/45
-  'AADSTS50079', // MFA support
+  "AADSTS16002", // old sid - https://github.com/salvoravida/react-adal/issues/46
+  "AADSTS50076", // MFA support - https://github.com/salvoravida/react-adal/pull/45
+  "AADSTS50079" // MFA support
 ];
 
 function shouldAcquireNewToken(message) {
-  return redirectMessages.some((v)=>(message.indexOf(v)!==-1));
+  return redirectMessages.some(v => message.indexOf(v) !== -1);
 }
 
 export function adalGetToken(authContext, resourceGuiId, callback) {
@@ -22,8 +22,7 @@ export function adalGetToken(authContext, resourceGuiId, callback) {
     authContext.acquireToken(resourceGuiId, (message, token, msg) => {
       if (!msg) {
         resolve(token);
-      } else
-      if (shouldAcquireNewToken(message)) {
+      } else if (shouldAcquireNewToken(message)) {
         // Default to redirect for multi-factor authentication
         // but allow using popup if a callback is provided
         if (callback) {
@@ -31,25 +30,27 @@ export function adalGetToken(authContext, resourceGuiId, callback) {
         } else {
           authContext.acquireTokenRedirect(resourceGuiId);
         }
-      } else reject({ message, msg });  // eslint-disable-line
+      } else reject({ message, msg }); // eslint-disable-line
     });
   });
 }
 
 export function runWithAdal(authContext, app, doNotLogin) {
-  //SSR support
+  // SSR support
   if (isSSR) {
     if (doNotLogin) app();
     return;
   }
-  //it must run in iframe too for refreshToken (parsing hash and get token)
+  // it must run in iframe too for refreshToken (parsing hash and get token)
   authContext.handleWindowCallback();
 
-  //prevent iframe double app !!!
+  // prevent iframe double app !!!
   if (window === window.parent) {
     if (!authContext.isCallback(window.location.hash)) {
-      if (!authContext.getCachedToken(authContext.config.clientId)
-          || !authContext.getCachedUser()) {
+      if (
+        !authContext.getCachedToken(authContext.config.clientId) ||
+        !authContext.getCachedUser()
+      ) {
         if (doNotLogin) {
           app();
         } else {
@@ -62,8 +63,41 @@ export function runWithAdal(authContext, app, doNotLogin) {
   }
 }
 
+export const RunWithAdal = ({ context, doNotLogin, children }) => {
+  // SSR support
+  if (isSSR) {
+    if (doNotLogin) return;
+    return;
+  }
+
+  const isLoggedIn = () => {
+    // it must run in iframe too for refreshToken (parsing hash and get token)
+    context.handleWindowCallback();
+
+    // prevent iframe double app !!!
+    if (window === window.parent) {
+      if (!context.isCallback(window.location.hash)) {
+        if (
+          !context.getCachedToken(context.config.clientId) ||
+          !context.getCachedUser()
+        ) {
+          if (doNotLogin) {
+            return true;
+          }
+          context.login();
+        } else {
+          return true;
+        }
+      }
+    }
+  };
+
+  // rednder children if user is logged in
+  return !isLoggedIn() ? <div /> : children;
+};
+
 export function adalFetch(authContext, resourceGuiId, fetch, url, options) {
-  return adalGetToken(authContext, resourceGuiId).then((token) => {
+  return adalGetToken(authContext, resourceGuiId).then(token => {
     const o = options || {};
     if (!o.headers) o.headers = {};
     o.headers.Authorization = `Bearer ${token}`;
@@ -80,7 +114,7 @@ export const withAdalLogin = (authContext, resourceId) => {
         super(props);
         this.state = {
           logged: false,
-          error: null,
+          error: null
         };
 
         adalGetToken(authContext, resourceId)
@@ -91,10 +125,10 @@ export const withAdalLogin = (authContext, resourceId) => {
               this.todoSetState = { logged: true };
             }
           })
-          .catch((error) => {
+          .catch(error => {
             const { msg } = error;
-            console.log(error);  // eslint-disable-line
-            if (msg === 'login required') {
+            console.log(error); // eslint-disable-line
+            if (msg === "login required") {
               authContext.login();
             } else if (this.mounted) {
               this.setState({ error });
@@ -104,22 +138,24 @@ export const withAdalLogin = (authContext, resourceId) => {
           });
       }
 
-      componentDidMount = () => {
+      componentDidMount() {
         this.mounted = true;
         if (this.todoSetState) {
           this.setState(this.todoSetState);
         }
-      };
+      }
 
-      componentWillUnmount = () => {
+      componentWillUnmount() {
         this.mounted = false;
-      };
+      }
 
       render() {
         const { logged, error } = this.state;
         if (logged) return <WrappedComponent {...this.props} />;
-        if (error) return typeof renderError === 'function' ? renderError(error) : null;
-        return typeof renderLoading === 'function' ? renderLoading() : null;
+        if (error) {
+          return typeof renderError === "function" ? renderError(error) : null;
+        }
+        return typeof renderLoading === "function" ? renderLoading() : null;
       }
     };
   };
