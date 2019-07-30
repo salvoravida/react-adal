@@ -71,6 +71,11 @@ export const RunWithAdal = ({ context, doNotLogin, children }) => {
   }
 
   const isLoggedIn = () => {
+    if (!context) {
+      throw new Error(
+        "Authentication Context was not provided, make sure the prop 'context' has a value "
+      );
+    }
     // it must run in iframe too for refreshToken (parsing hash and get token)
     context.handleWindowCallback();
 

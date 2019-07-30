@@ -5,7 +5,8 @@
   "main": "lib/react-adal.js",
   "scripts": {
     "prestart": "npm run build",
-    "start": "parcel sample/index.html",
+    "start:static": "parcel sample/staticSite/index.html",
+    "start:spa": "parcel sample/SPA/index.html",
     "build": "cross-env NODE_ENV=production babel src --out-dir lib",
     "prepare": "npm run build",
     "prepublishOnly": "npm run build"
