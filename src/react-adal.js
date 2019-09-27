@@ -5,7 +5,7 @@ import AuthenticationContext_ from './adal';
 const isSSR = typeof window === 'undefined';
 
 //fake context on SSR
-export const AuthenticationContext = isSSR? ()=>{} : AuthenticationContext_;
+export const AuthenticationContext = isSSR ? ()=>{} : AuthenticationContext_;
 
 const redirectMessages = [
   'AADSTS16002', // old sid - https://github.com/salvoravida/react-adal/issues/46
@@ -17,7 +17,17 @@ function shouldAcquireNewToken(message) {
   return redirectMessages.some((v)=>(message.indexOf(v)!==-1));
 }
 
-export function adalGetToken(authContext, resourceGuiId, callback) {
+function parseResourceInfo(resourceInfo) {
+  typeof resourceInfo === 'string' ? { resourceGuiId: resourceInfo } : resourceInfo;
+}
+
+export function adalGetToken(authContext, resourceInfo, callback) {
+  const { 
+    resourceGuiId, 
+    extraQueryParameters, 
+    claims 
+  } = parseResourceInfo(resourceInfo)
+
   return new Promise((resolve, reject) => {
     authContext.acquireToken(resourceGuiId, (message, token, msg) => {
       if (!msg) {
@@ -27,9 +37,9 @@ export function adalGetToken(authContext, resourceGuiId, callback) {
         // Default to redirect for multi-factor authentication
         // but allow using popup if a callback is provided
         if (callback) {
-          authContext.acquireTokenPopup(resourceGuiId, callback);
+          authContext.acquireTokenPopup(resourceGuiId, extraQueryParameters, claims, callback);
         } else {
-          authContext.acquireTokenRedirect(resourceGuiId);
+          authContext.acquireTokenRedirect(resourceGuiId, extraQueryParameters, claims);
         }
       } else reject({ message, msg });  // eslint-disable-line
     });
@@ -62,8 +72,8 @@ export function runWithAdal(authContext, app, doNotLogin) {
   }
 }
 
-export function adalFetch(authContext, resourceGuiId, fetch, url, options) {
-  return adalGetToken(authContext, resourceGuiId).then((token) => {
+export function adalFetch(authContext, resourceInfo, fetch, url, options) {
+  return adalGetToken(authContext, resourceInfo).then((token) => {
     const o = options || {};
     if (!o.headers) o.headers = {};
     o.headers.Authorization = `Bearer ${token}`;
@@ -72,7 +82,7 @@ export function adalFetch(authContext, resourceGuiId, fetch, url, options) {
 }
 
 // eslint-disable-next-line
-export const withAdalLogin = (authContext, resourceId) => {
+export const withAdalLogin = (authContext, resourceInfo) => {
   // eslint-disable-next-line
   return function(WrappedComponent, renderLoading, renderError) {
     return class extends React.Component {
@@ -83,7 +93,7 @@ export const withAdalLogin = (authContext, resourceId) => {
           error: null,
         };
 
-        adalGetToken(authContext, resourceId)
+        adalGetToken(authContext, resourceInfo)
           .then(() => {
             if (this.mounted) {
               this.setState({ logged: true });
