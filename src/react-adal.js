@@ -58,8 +58,10 @@ export function runWithAdal(authContext, app, doNotLogin) {
   //prevent iframe double app !!!
   if (window === window.parent) {
     if (!authContext.isCallback(window.location.hash)) {
-      if (!authContext.getCachedToken(authContext.config.clientId)
-          || !authContext.getCachedUser()) {
+      const resource = authContext.config.loginResource; // adal sdk assigns clientId if loginResource is not provided
+      const token = authContext.getCachedToken(resource);
+      const user = authContext.getCachedUser();
+      if (!token || !user) {
         if (doNotLogin) {
           app();
         } else {
