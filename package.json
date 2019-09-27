@@ -6,7 +6,8 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production babel src --out-dir lib",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "sdk:update": "node internals/update-sdk.js"
   },
   "repository": {
     "type": "git",
