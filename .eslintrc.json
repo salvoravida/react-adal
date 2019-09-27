@@ -2,12 +2,7 @@
   "env": {
     "browser": true
   },
-  "extends": ["airbnb", "plugin:react/recommended", "prettier"],
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
-  },
+  "extends": "airbnb",
   "rules": {
     "camelcase": 0,
     "import/prefer-default-export": 0,
@@ -20,9 +15,7 @@
     "no-return-assign": 0,
     "no-unused-vars": "warn",
     "no-unused-expressions": 0,
-    "react/jsx-filename-extension": 0,
-    "react/prop-types": 0,
-    "react/display-name": 0,
-    "consistent-return": 0
+    "spaced-comment": 0,
+    "react/jsx-filename-extension": 0
   }
 }
