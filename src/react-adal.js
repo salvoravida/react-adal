@@ -18,7 +18,7 @@ function shouldAcquireNewToken(message) {
 }
 
 function parseResourceInfo(resourceInfo) {
-  typeof resourceInfo === 'string' ? { resourceGuiId: resourceInfo } : resourceInfo;
+  return typeof resourceInfo === 'string' ? { resourceGuiId: resourceInfo } : resourceInfo;
 }
 
 export function adalGetToken(authContext, resourceInfo, callback) {
