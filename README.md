@@ -100,6 +100,38 @@ const MyProtectedPage = withAdalLoginApi(MyPage, () => <Loading />, (error) => <
 />
 
 ```
+# Logging Out
+
+The AuthenticationContext object (authContext) has a built in function (logOut) to log out of a session. This function redirects user to the logout endpoint.
+After logout, the user will be redirected to the postLogoutRedirectUri if it was added as a property on the config object.
+The following code shows an example of how to create a Log Out dropdown in a NavBar
+
+```javascript
+import React from 'react';
+import { Navbar, Dropdown, DropdownMenu, DropdownItem } from 'reactstrap';
+import { authContext } from '../adalConfig';
+
+...
+
+  render() {
+    return (
+      <header>
+        <NavBar>
+          ...
+            <Dropdown>
+              <DropdownMenu>
+                <DropdownItem onClick={() => authContext.logOut()}>
+                  Logout
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          ...
+        </NavBar>
+      </header>
+    );
+  }
+```
+
 # changelog
 ```
 v0.4.24
