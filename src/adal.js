@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------
-// AdalJS v1.0.17
+// AdalJS v1.0.18
 // @preserve Copyright (c) Microsoft Open Technologies, Inc.
 // All Rights Reserved
 // Apache License 2.0
@@ -135,6 +135,10 @@ var AuthenticationContext = (function () {
         this._openedWindows = [];
         this._requestType = this.REQUEST_TYPE.LOGIN;
         window._adalInstance = this;
+        this._storageSupport = {
+            localStorage: null,
+            sessionStorage: null
+        };
 
         // validate before constructor assignments
         if (config.displayCall && typeof config.displayCall !== 'function') {
@@ -252,15 +256,15 @@ var AuthenticationContext = (function () {
     AuthenticationContext.prototype._openPopup = function (urlNavigate, title, popUpWidth, popUpHeight) {
         try {
             /**
-             * adding winLeft and winTop to account for dual monitor
-             * using screenLeft and screenTop for IE8 and earlier
-             */
+            * adding winLeft and winTop to account for dual monitor
+            * using screenLeft and screenTop for IE8 and earlier
+            */
             var winLeft = window.screenLeft ? window.screenLeft : window.screenX;
             var winTop = window.screenTop ? window.screenTop : window.screenY;
             /**
-             * window.innerWidth displays browser window's height and width excluding toolbars
-             * using document.documentElement.clientWidth for IE8 and earlier
-             */
+            * window.innerWidth displays browser window's height and width excluding toolbars
+            * using document.documentElement.clientWidth for IE8 and earlier
+            */
             var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
             var height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
             var left = ((width / 2) - (popUpWidth / 2)) + winLeft;
@@ -426,11 +430,11 @@ var AuthenticationContext = (function () {
     };
 
     /**
-     * User information from idtoken.
-     *  @class User
-     *  @property {string} userName - username assigned from upn or email.
-     *  @property {object} profile - properties parsed from idtoken.
-     */
+    * User information from idtoken.
+    *  @class User
+    *  @property {string} userName - username assigned from upn or email.
+    *  @property {object} profile - properties parsed from idtoken.
+    */
 
     /**
      * If user object exists, returns it. Else creates a new user object by decoding id_token from the cache.
@@ -447,7 +451,7 @@ var AuthenticationContext = (function () {
     };
 
     /**
-     * Adds the passed callback to the array of callbacks for the specified resource and puts the array on the window object.
+     * Adds the passed callback to the array of callbacks for the specified resource and puts the array on the window object. 
      * @param {string}   resource A URI that identifies the resource for which the token is requested.
      * @param {string}   expectedState A unique identifier (guid).
      * @param {tokenCallback} callback - The callback provided by the caller. It will be called with token or error.
@@ -688,11 +692,11 @@ var AuthenticationContext = (function () {
     };
 
     /**
-     * Acquires token (interactive flow using a popUp window) by sending request to AAD to obtain a new token.
-     * @param {string}   resource  ResourceUri identifying the target resource
-     * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
-     * @param {tokenCallback} callback -  The callback provided by the caller. It will be called with token or error.
-     */
+  * Acquires token (interactive flow using a popUp window) by sending request to AAD to obtain a new token.
+  * @param {string}   resource  ResourceUri identifying the target resource
+  * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
+  * @param {tokenCallback} callback -  The callback provided by the caller. It will be called with token or error.
+  */
     AuthenticationContext.prototype.acquireTokenPopup = function (resource, extraQueryParameters, claims, callback) {
         if (this._isEmpty(resource)) {
             this.warn('resource is required');
@@ -741,11 +745,11 @@ var AuthenticationContext = (function () {
     };
 
     /**
-     * Acquires token (interactive flow using a redirect) by sending request to AAD to obtain a new token. In this case the callback passed in the Authentication
-     * request constructor will be called.
-     * @param {string}   resource  ResourceUri identifying the target resource
-     * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
-     */
+      * Acquires token (interactive flow using a redirect) by sending request to AAD to obtain a new token. In this case the callback passed in the Authentication
+      * request constructor will be called.
+      * @param {string}   resource  ResourceUri identifying the target resource
+      * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
+      */
     AuthenticationContext.prototype.acquireTokenRedirect = function (resource, extraQueryParameters, claims) {
         if (this._isEmpty(resource)) {
             this.warn('resource is required');
@@ -809,6 +813,7 @@ var AuthenticationContext = (function () {
      * Clears cache items.
      */
     AuthenticationContext.prototype.clearCache = function () {
+        this._user = null;
         this._saveItem(this.CONSTANTS.STORAGE.LOGIN_REQUEST, '');
         this._saveItem(this.CONSTANTS.STORAGE.ANGULAR_LOGIN_REQUEST, '');
         this._saveItem(this.CONSTANTS.STORAGE.SESSION_STATE, '');
@@ -855,7 +860,6 @@ var AuthenticationContext = (function () {
      */
     AuthenticationContext.prototype.logOut = function () {
         this.clearCache();
-        this._user = null;
         var urlNavigate;
 
         if (this.config.logOutUri) {
@@ -924,7 +928,8 @@ var AuthenticationContext = (function () {
      * @ignore
      */
     AuthenticationContext.prototype._addHintParameters = function (urlNavigate) {
-        //If you don�t use prompt=none, then if the session does not exist, there will be a failure.
+
+        //If you don't use prompt=none, then if the session does not exist, there will be a failure.
         //If sid is sent alongside domain or login hints, there will be a failure since request is ambiguous.
         //If sid is sent with a prompt value other than none or attempt_none, there will be a failure since the request is ambiguous.
 
@@ -1089,9 +1094,9 @@ var AuthenticationContext = (function () {
     };
 
     /**
-     * Matches nonce from the request with the response.
-     * @ignore
-     */
+    * Matches nonce from the request with the response.
+    * @ignore
+    */
     AuthenticationContext.prototype._matchNonce = function (user) {
         var requestNonce = this._getItem(this.CONSTANTS.STORAGE.NONCE_IDTOKEN);
 
@@ -1108,9 +1113,9 @@ var AuthenticationContext = (function () {
     };
 
     /**
-     * Matches state from the request with the response.
-     * @ignore
-     */
+    * Matches state from the request with the response.
+    * @ignore
+    */
     AuthenticationContext.prototype._matchState = function (requestInfo) {
         var loginStates = this._getItem(this.CONSTANTS.STORAGE.STATE_LOGIN);
 
@@ -1213,17 +1218,16 @@ var AuthenticationContext = (function () {
                             this._user = null;
                         } else {
                             this._saveItem(this.CONSTANTS.STORAGE.IDTOKEN, requestInfo.parameters[this.CONSTANTS.ID_TOKEN]);
-
                             // Save idtoken as access token for app itself
-                            resource = this.config.loginResource ? this.config.loginResource : this.config.clientId;
+                            var idTokenResource = this.config.loginResource ? this.config.loginResource : this.config.clientId;
 
-                            if (!this._hasResource(resource)) {
+                            if (!this._hasResource(idTokenResource)) {
                                 keys = this._getItem(this.CONSTANTS.STORAGE.TOKEN_KEYS) || '';
-                                this._saveItem(this.CONSTANTS.STORAGE.TOKEN_KEYS, keys + resource + this.CONSTANTS.RESOURCE_DELIMETER);
+                                this._saveItem(this.CONSTANTS.STORAGE.TOKEN_KEYS, keys + idTokenResource + this.CONSTANTS.RESOURCE_DELIMETER);
                             }
 
-                            this._saveItem(this.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + resource, requestInfo.parameters[this.CONSTANTS.ID_TOKEN]);
-                            this._saveItem(this.CONSTANTS.STORAGE.EXPIRATION_KEY + resource, this._user.profile.exp);
+                            this._saveItem(this.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + idTokenResource, requestInfo.parameters[this.CONSTANTS.ID_TOKEN]);
+                            this._saveItem(this.CONSTANTS.STORAGE.EXPIRATION_KEY + idTokenResource, this._user.profile.exp);
                         }
                     }
                     else {
@@ -1279,7 +1283,7 @@ var AuthenticationContext = (function () {
         }
         else {
             // in angular level, the url for $http interceptor call could be relative url,
-            // if it's relative call, we'll treat it as app backend call.
+            // if it's relative call, we'll treat it as app backend call.            
             return this.config.loginResource;
         }
 
@@ -1429,7 +1433,7 @@ var AuthenticationContext = (function () {
         }
     };
 
-    //Take https://cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.js and https://en.wikipedia.org/wiki/Base64 as reference.
+    //Take https://cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.js and https://en.wikipedia.org/wiki/Base64 as reference. 
     AuthenticationContext.prototype._decode = function (base64IdToken) {
         var codes = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
         base64IdToken = String(base64IdToken).replace(/=+$/, '');
@@ -1685,7 +1689,7 @@ var AuthenticationContext = (function () {
                 ifr.setAttribute('aria-hidden', 'true');
                 ifr.style.visibility = 'hidden';
                 ifr.style.position = 'absolute';
-                ifr.style.width = ifr.style.height = ifr.borderWidth = '0px';
+                ifr.style.width = ifr.style.height = ifr.style.borderWidth = '0px';
 
                 adalFrame = document.getElementsByTagName('body')[0].appendChild(ifr);
             }
@@ -1760,20 +1764,44 @@ var AuthenticationContext = (function () {
     };
 
     /**
+     * Returns true if the browser supports given storage type
+     * @ignore
+     */
+    AuthenticationContext.prototype._supportsStorage = function(storageType) {
+        if (!(storageType in this._storageSupport)) {
+            return false;
+        }
+
+        if (this._storageSupport[storageType] !== null) {
+            return this._storageSupport[storageType];
+        }
+
+        try {
+            if (!(storageType in window) || window[storageType] === null) {
+                throw new Error();
+            }
+            var testKey = '__storageTest__';
+            window[storageType].setItem(testKey, 'A');
+            if (window[storageType].getItem(testKey) !== 'A') {
+                throw new Error();
+            }
+            window[storageType].removeItem(testKey);
+            if (window[storageType].getItem(testKey)) {
+                throw new Error();
+            }
+            this._storageSupport[storageType] = true;
+        } catch (e) {
+            this._storageSupport[storageType] = false;
+        }
+        return this._storageSupport[storageType];
+    }
+
+    /**
      * Returns true if browser supports localStorage, false otherwise.
      * @ignore
      */
-    AuthenticationContext.prototype._supportsLocalStorage = function () {
-        try {
-            if (!window.localStorage) return false; // Test availability
-            window.localStorage.setItem('storageTest', 'A'); // Try write
-            if (window.localStorage.getItem('storageTest') != 'A') return false; // Test read/write
-            window.localStorage.removeItem('storageTest'); // Try delete
-            if (window.localStorage.getItem('storageTest')) return false; // Test delete
-            return true; // Success
-        } catch (e) {
-            return false;
-        }
+    AuthenticationContext.prototype._supportsLocalStorage = function () {        
+        return this._supportsStorage('localStorage');
     };
 
     /**
@@ -1781,16 +1809,7 @@ var AuthenticationContext = (function () {
      * @ignore
      */
     AuthenticationContext.prototype._supportsSessionStorage = function () {
-        try {
-            if (!window.sessionStorage) return false; // Test availability
-            window.sessionStorage.setItem('storageTest', 'A'); // Try write
-            if (window.sessionStorage.getItem('storageTest') != 'A') return false; // Test read/write
-            window.sessionStorage.removeItem('storageTest'); // Try delete
-            if (window.sessionStorage.getItem('storageTest')) return false; // Test delete
-            return true; // Success
-        } catch (e) {
-            return false;
-        }
+        return this._supportsStorage('sessionStorage');
     };
 
     /**
@@ -1822,7 +1841,7 @@ var AuthenticationContext = (function () {
     };
 
     /**
-     * Checks the Logging Level, constructs the Log message and logs it. Users need to implement/override this method to turn on Logging.
+     * Checks the Logging Level, constructs the Log message and logs it. Users need to implement/override this method to turn on Logging. 
      * @param {number} level  -  Level can be set 0,1,2 and 3 which turns on 'error', 'warning', 'info' or 'verbose' level logging respectively.
      * @param {string} message  -  Message to log.
      * @param {string} error  -  Error to log.
@@ -1884,10 +1903,10 @@ var AuthenticationContext = (function () {
     };
 
     /**
-     * Logs Pii messages when Logging Level is set to 0 and window.piiLoggingEnabled is set to true.
-     * @param {string} message  -  Message to log.
-     * @param {string} error  -  Error to log.
-     */
+    * Logs Pii messages when Logging Level is set to 0 and window.piiLoggingEnabled is set to true.
+    * @param {string} message  -  Message to log.
+    * @param {string} error  -  Error to log.
+    */
     AuthenticationContext.prototype.errorPii = function (message, error) {
         this.log(this.CONSTANTS.LOGGING_LEVEL.ERROR, message, error, true);
     };
@@ -1920,7 +1939,7 @@ var AuthenticationContext = (function () {
      * @ignore
      */
     AuthenticationContext.prototype._libVersion = function () {
-        return '1.0.17';
+        return '1.0.18';
     };
 
     /**
