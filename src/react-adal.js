@@ -22,10 +22,10 @@ function parseResourceInfo(resourceInfo) {
 }
 
 export function adalGetToken(authContext, resourceInfo, callback) {
-  const { 
-    resourceGuiId, 
-    extraQueryParameters, 
-    claims 
+  const {
+    resourceGuiId,
+    extraQueryParameters,
+    claims
   } = parseResourceInfo(resourceInfo)
 
   return new Promise((resolve, reject) => {
@@ -97,22 +97,23 @@ export const withAdalLogin = (authContext, resourceInfo) => {
 
         adalGetToken(authContext, resourceInfo)
           .then(() => {
-            if (this.mounted) {
-              this.setState({ logged: true });
-            } else {
-              this.todoSetState = { logged: true };
-            }
+            this.safeSetState({logged:true});
           })
           .catch((error) => {
             const { msg } = error;
             console.log(error);  // eslint-disable-line
-            if (msg === 'login required') {
-              authContext.login();
-            } else if (this.mounted) {
-              this.setState({ error });
-            } else {
-              this.todoSetState = { error };
+
+            const loginError = authContext.getLoginError();
+            const loginWasTriedButFailed = loginError !== undefined && loginError !== null && loginError !=="";
+
+            if (loginWasTriedButFailed) {
+              this.safeSetState({ error: loginError })
             }
+            else if (msg === 'login required') {
+              authContext.login();
+            } else {
+                this.safeSetState({ error })
+              }
           });
       }
 
