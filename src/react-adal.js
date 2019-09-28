@@ -105,30 +105,33 @@ export const withAdalLogin = (authContext, resourceInfo) => {
           error: null
         };
 
-        adalGetToken(authContext, resourceInfo)
-          .then(() => {
-            this.safeSetState({ logged: true });
-          })
-          .catch(error => {
-            const { msg } = error;
-            console.log('adalGetToken', error); // eslint-disable-line
+        //#67 Using react-adal with Server Side Rendering(Next.js)
+        if (!isSSR) {
+          adalGetToken(authContext, resourceInfo)
+            .then(() => {
+              this.safeSetState({ logged: true });
+            })
+            .catch(error => {
+              const { msg } = error;
+              console.log('adalGetToken', error); // eslint-disable-line
 
-            //Avoid the infinite loop when access_denied
-            //https://github.com/salvoravida/react-adal/issues/33
-            const loginError = authContext.getLoginError();
-            const loginWasTriedButFailed =
-              loginError !== undefined &&
-              loginError !== null &&
-              loginError !== '';
+              //Avoid the infinite loop when access_denied
+              //https://github.com/salvoravida/react-adal/issues/33
+              const loginError = authContext.getLoginError();
+              const loginWasTriedButFailed =
+                loginError !== undefined &&
+                loginError !== null &&
+                loginError !== '';
 
-            if (loginWasTriedButFailed) {
-              this.safeSetState({ error: loginError });
-            } else if (msg === 'login required') {
-              authContext.login();
-            } else {
-              this.safeSetState({ error });
-            }
-          });
+              if (loginWasTriedButFailed) {
+                this.safeSetState({ error: loginError });
+              } else if (msg === 'login required') {
+                authContext.login();
+              } else {
+                this.safeSetState({ error });
+              }
+            });
+        }
       }
 
       safeSetState = state => {
@@ -151,6 +154,7 @@ export const withAdalLogin = (authContext, resourceInfo) => {
       };
 
       render() {
+        if (isSSR) return null;
         const { logged, error } = this.state;
         if (logged) return <WrappedComponent {...this.props} />;
         if (error)

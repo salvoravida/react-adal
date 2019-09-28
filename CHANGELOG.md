@@ -8,4 +8,6 @@ Using loginResource to check login token instead of clientId. This because SDK's
 
 #33 https://github.com/salvoravida/react-adal/issues/33
 
-login ok - permission failed fix
+login ok - permission failed fix infinite loop
+
+# fix SSR support withAdalLogin Hoc
