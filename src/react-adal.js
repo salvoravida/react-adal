@@ -5,43 +5,51 @@ import AuthenticationContext_ from './adal';
 const isSSR = typeof window === 'undefined';
 
 //fake context on SSR
-export const AuthenticationContext = isSSR ? ()=>{} : AuthenticationContext_;
+export const AuthenticationContext = isSSR ? () => {} : AuthenticationContext_;
 
 const redirectMessages = [
   'AADSTS16002', // old sid - https://github.com/salvoravida/react-adal/issues/46
   'AADSTS50076', // MFA support - https://github.com/salvoravida/react-adal/pull/45
-  'AADSTS50079', // MFA support
+  'AADSTS50079' // MFA support
 ];
 
 function shouldAcquireNewToken(message) {
-  return redirectMessages.some((v)=>(message.indexOf(v)!==-1));
+  return redirectMessages.some(v => message.indexOf(v) !== -1);
 }
 
 function parseResourceInfo(resourceInfo) {
-  return typeof resourceInfo === 'string' ? { resourceGuiId: resourceInfo } : resourceInfo;
+  return typeof resourceInfo === 'string'
+    ? { resourceGuiId: resourceInfo }
+    : resourceInfo;
 }
 
 export function adalGetToken(authContext, resourceInfo, callback) {
-  const {
-    resourceGuiId,
-    extraQueryParameters,
-    claims
-  } = parseResourceInfo(resourceInfo)
+  const { resourceGuiId, extraQueryParameters, claims } = parseResourceInfo(
+    resourceInfo
+  );
 
   return new Promise((resolve, reject) => {
     authContext.acquireToken(resourceGuiId, (message, token, msg) => {
       if (!msg) {
         resolve(token);
-      } else
-      if (shouldAcquireNewToken(message)) {
+      } else if (shouldAcquireNewToken(message)) {
         // Default to redirect for multi-factor authentication
         // but allow using popup if a callback is provided
         if (callback) {
-          authContext.acquireTokenPopup(resourceGuiId, extraQueryParameters, claims, callback);
+          authContext.acquireTokenPopup(
+            resourceGuiId,
+            extraQueryParameters,
+            claims,
+            callback
+          );
         } else {
-          authContext.acquireTokenRedirect(resourceGuiId, extraQueryParameters, claims);
+          authContext.acquireTokenRedirect(
+            resourceGuiId,
+            extraQueryParameters,
+            claims
+          );
         }
-      } else reject({ message, msg });  // eslint-disable-line
+      } else reject({ message, msg }); // eslint-disable-line
     });
   });
 }
@@ -58,9 +66,11 @@ export function runWithAdal(authContext, app, doNotLogin) {
   //prevent iframe double app !!!
   if (window === window.parent) {
     if (!authContext.isCallback(window.location.hash)) {
-      const resource = authContext.config.loginResource; // adal sdk assigns clientId if loginResource is not provided
+      // adal sdk assigns clientId if loginResource is not provided
+      const resource = authContext.config.loginResource;
       const token = authContext.getCachedToken(resource);
       const user = authContext.getCachedUser();
+
       if (!token || !user) {
         if (doNotLogin) {
           app();
@@ -75,7 +85,7 @@ export function runWithAdal(authContext, app, doNotLogin) {
 }
 
 export function adalFetch(authContext, resourceInfo, fetch, url, options) {
-  return adalGetToken(authContext, resourceInfo).then((token) => {
+  return adalGetToken(authContext, resourceInfo).then(token => {
     const o = options || {};
     if (!o.headers) o.headers = {};
     o.headers.Authorization = `Bearer ${token}`;
@@ -92,32 +102,36 @@ export const withAdalLogin = (authContext, resourceInfo) => {
         super(props);
         this.state = {
           logged: false,
-          error: null,
+          error: null
         };
 
         adalGetToken(authContext, resourceInfo)
           .then(() => {
-            this.safeSetState({logged:true});
+            this.safeSetState({ logged: true });
           })
-          .catch((error) => {
+          .catch(error => {
             const { msg } = error;
-            console.log(error);  // eslint-disable-line
+            console.log('adalGetToken', error); // eslint-disable-line
 
+            //Avoid the infinite loop when access_denied
+            //https://github.com/salvoravida/react-adal/issues/33
             const loginError = authContext.getLoginError();
-            const loginWasTriedButFailed = loginError !== undefined && loginError !== null && loginError !=="";
+            const loginWasTriedButFailed =
+              loginError !== undefined &&
+              loginError !== null &&
+              loginError !== '';
 
             if (loginWasTriedButFailed) {
-              this.safeSetState({ error: loginError })
-            }
-            else if (msg === 'login required') {
+              this.safeSetState({ error: loginError });
+            } else if (msg === 'login required') {
               authContext.login();
             } else {
-                this.safeSetState({ error })
-              }
+              this.safeSetState({ error });
+            }
           });
       }
 
-      safeSetState = (state) => {
+      safeSetState = state => {
         if (this.mounted) {
           this.setState(state);
         } else {
@@ -139,7 +153,8 @@ export const withAdalLogin = (authContext, resourceInfo) => {
       render() {
         const { logged, error } = this.state;
         if (logged) return <WrappedComponent {...this.props} />;
-        if (error) return typeof renderError === 'function' ? renderError(error) : null;
+        if (error)
+          return typeof renderError === 'function' ? renderError(error) : null;
         return typeof renderLoading === 'function' ? renderLoading() : null;
       }
     };
