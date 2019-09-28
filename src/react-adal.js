@@ -104,6 +104,14 @@ export const withAdalLogin = (authContext, resourceId) => {
           });
       }
 
+      safeSetState = (state) => {
+        if (this.mounted) {
+          this.setState(state);
+        } else {
+          this.todoSetState = state;
+        }
+      };
+
       componentDidMount = () => {
         this.mounted = true;
         if (this.todoSetState) {
