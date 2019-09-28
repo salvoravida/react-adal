@@ -132,39 +132,10 @@ import { authContext } from '../adalConfig';
   }
 ```
 
+
 # changelog
-```
-v0.4.24
-+upgrade to babel 7
-+SSR support
-+fix ie10
+view -> [CHANGELOG.md](CHANGELOG.md)
 
-v0.4.22
-!support old sid #issue 7
-!withAdalLogin HOC componentWillMount deprecated removed
-!withAdalLogin HOC check mounted before setState
-
-v0.4.19
-+support MFA redirect - merged pr
-
-v0.4.18
-!adalFetch options fix
-+es5 lib
-
-v0.4.17
-+update adal.js to 1.0.17
-+added withAdalLogin HOC for login only on a single Route
-+added example for single route login
-
-v0.3.15
-!fix eslint and packages dep
-!fix devDependencies
-+update readme
-
-v0.1.15
-+first release
-+include AdalJS v.1.0.15
-```
 # tutorials from the web
 
 https://itnext.io/a-memo-on-how-to-implement-azure-ad-authentication-using-react-and-net-core-2-0-3fe9bfdf9f36
