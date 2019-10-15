@@ -8,7 +8,7 @@ Azure Active Directory Library (ADAL) support for <a href="https://facebook.gith
 
 <p align="center">
   <a href="https://www.npmjs.com/package/react-adal"><img src="https://img.shields.io/npm/v/react-adal.svg?style=flat-square"></a>
-  <a href="https://www.npmjs.com/package/react-adal"><img src="https://img.shields.io/npm/dm/react-adal.svg?style=flat-square"></a>
+  <a href="https://www.npmjs.com/package/react-adal"><img src="https://img.shields.io/npm/dy/react-adal.svg?style=flat-square"></a>
 </p>
 
 # react-adal
