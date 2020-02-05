@@ -38,6 +38,8 @@ var AuthenticationContext = (function () {
      *  @property {number} expireOffsetSeconds If the cached token is about to be expired in the expireOffsetSeconds (in seconds), Adal will renew the token instead of using the cached token. Defaults to 300 seconds.
      *  @property {string} correlationId Unique identifier used to map the request with the response. Defaults to RFC4122 version 4 guid (128 bits).
      *  @property {number} loadFrameTimeout The number of milliseconds of inactivity before a token renewal response from AAD should be considered timed out.
+     *  @property {number} policy Policy name for user flow.
+     *  @property {number} scope Scope type used for access tokens defined in the user flow.
      */
 
     /**
@@ -451,7 +453,7 @@ var AuthenticationContext = (function () {
     };
 
     /**
-     * Adds the passed callback to the array of callbacks for the specified resource and puts the array on the window object. 
+     * Adds the passed callback to the array of callbacks for the specified resource and puts the array on the window object.
      * @param {string}   resource A URI that identifies the resource for which the token is requested.
      * @param {string}   expectedState A unique identifier (guid).
      * @param {tokenCallback} callback - The callback provided by the caller. It will be called with token or error.
@@ -1283,7 +1285,7 @@ var AuthenticationContext = (function () {
         }
         else {
             // in angular level, the url for $http interceptor call could be relative url,
-            // if it's relative call, we'll treat it as app backend call.            
+            // if it's relative call, we'll treat it as app backend call.
             return this.config.loginResource;
         }
 
@@ -1433,7 +1435,7 @@ var AuthenticationContext = (function () {
         }
     };
 
-    //Take https://cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.js and https://en.wikipedia.org/wiki/Base64 as reference. 
+    //Take https://cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.js and https://en.wikipedia.org/wiki/Base64 as reference.
     AuthenticationContext.prototype._decode = function (base64IdToken) {
         var codes = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
         base64IdToken = String(base64IdToken).replace(/=+$/, '');
@@ -1546,6 +1548,14 @@ var AuthenticationContext = (function () {
 
             var correlationId = obj.correlationId ? obj.correlationId : this._guid();
             str.push('client-request-id=' + encodeURIComponent(correlationId));
+
+            if (obj.hasOwnProperty('policy')) {
+                str.push('p=' + encodeURIComponent(obj.policy));
+            }
+
+            if (obj.hasOwnProperty('scope')) {
+            str.push('scope=' + encodeURIComponent(obj.scope));
+            }
         }
 
         return str.join('&');
@@ -1800,7 +1810,7 @@ var AuthenticationContext = (function () {
      * Returns true if browser supports localStorage, false otherwise.
      * @ignore
      */
-    AuthenticationContext.prototype._supportsLocalStorage = function () {        
+    AuthenticationContext.prototype._supportsLocalStorage = function () {
         return this._supportsStorage('localStorage');
     };
 
@@ -1841,7 +1851,7 @@ var AuthenticationContext = (function () {
     };
 
     /**
-     * Checks the Logging Level, constructs the Log message and logs it. Users need to implement/override this method to turn on Logging. 
+     * Checks the Logging Level, constructs the Log message and logs it. Users need to implement/override this method to turn on Logging.
      * @param {number} level  -  Level can be set 0,1,2 and 3 which turns on 'error', 'warning', 'info' or 'verbose' level logging respectively.
      * @param {string} message  -  Message to log.
      * @param {string} error  -  Error to log.
