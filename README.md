@@ -1,3 +1,16 @@
+<p align="center">
+    <img alt="react-adal" src="https://i.postimg.cc/Xvg09cyT/react-adal.logo.png">
+</p>
+
+<p align="center">
+Azure Active Directory Library (ADAL) support for <a href="https://facebook.github.io/react">React</a>
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/react-adal"><img src="https://img.shields.io/npm/v/react-adal.svg?style=flat-square"></a>
+  <a href="https://www.npmjs.com/package/react-adal"><img src="https://img.shields.io/npm/dm/react-adal.svg?style=flat-square"></a>
+</p>
+
 # react-adal
 Azure Active Directory Library (ADAL) support for ReactJS
 
@@ -26,16 +39,11 @@ runWithAdal(authContext, () => {
 This index wrap is needed because ADAL use iframes for token silent refresh,
 and we do not want to have duplicated ReactApp started on iframes too!
 
-indexApp.js (your real app index as it already is)
-
+indexApp.js (your real app index as it already is - example below)
 ```javascript
-
-import 'babel-polyfill';
-import 'matchmedia-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import 'normalize.css';
 import { store } from './store';
 import App from './App';
 
@@ -92,26 +100,49 @@ const MyProtectedPage = withAdalLoginApi(MyPage, () => <Loading />, (error) => <
 />
 
 ```
+# Logging Out
+
+The AuthenticationContext object (authContext) has a built in function (logOut) to log out of a session. This function redirects user to the logout endpoint.
+After logout, the user will be redirected to the postLogoutRedirectUri if it was added as a property on the config object.
+The following code shows an example of how to create a Log Out dropdown in a NavBar
+
+```javascript
+import React from 'react';
+import { Navbar, Dropdown, DropdownMenu, DropdownItem } from 'reactstrap';
+import { authContext } from '../adalConfig';
+
+...
+
+  render() {
+    return (
+      <header>
+        <NavBar>
+          ...
+            <Dropdown>
+              <DropdownMenu>
+                <DropdownItem onClick={() => authContext.logOut()}>
+                  Logout
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          ...
+        </NavBar>
+      </header>
+    );
+  }
+```
+
+
 # changelog
-```
-v0.4.18
-!adalFetch options fix
-+es5 lib
+view -> [CHANGELOG.md](CHANGELOG.md)
 
-v0.4.17
-+update adal.js to 1.0.17
-+added withAdalLogin HOC for login only on a single Route
-+added example for single route login
+# tutorials from the web
 
-v0.3.15
-!fix eslint and packages dep
-!fix devDependencies
-+update readme
+https://itnext.io/a-memo-on-how-to-implement-azure-ad-authentication-using-react-and-net-core-2-0-3fe9bfdf9f36
 
-v0.1.15
-+first release
-+include AdalJS v.1.0.15
-```
+https://medium.com/@dmitrii.korolev1/react-adal-typescript-pnp-sp-93ef69eddd18
+
+
 # inspired by
 
 https://blog.mastykarz.nl/building-office-365-web-applications-react/
@@ -120,6 +151,9 @@ https://medium.com/@adpreg/react-with-redux-app-with-azure-ad-auth-and-net-core-
 
 https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-protocols-implicit
 
+
+# MS adal.js
+https://github.com/AzureAD/azure-activedirectory-library-for-js
 
 # credits
 
