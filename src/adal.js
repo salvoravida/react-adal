@@ -228,7 +228,7 @@ var AuthenticationContext = (function () {
         this._saveItem(this.CONSTANTS.STORAGE.NONCE_IDTOKEN, this._idTokenNonce, true);
         this._saveItem(this.CONSTANTS.STORAGE.ERROR, '');
         this._saveItem(this.CONSTANTS.STORAGE.ERROR_DESCRIPTION, '');
-        var urlNavigate = this._getNavigateUrl('id_token', null) + '&nonce=' + encodeURIComponent(this._idTokenNonce);
+        var urlNavigate = this._getNavigateUrl('id_token', this.config.endpoints.api) + '&nonce=' + encodeURIComponent(this._idTokenNonce);
 
         if (this.config.displayCall) {
             // User defined way of handling the navigation
