@@ -504,6 +504,8 @@ var AuthenticationContext = (function () {
         var urlNavigate = this._urlRemoveQueryStringParameter(this._getNavigateUrl(responseType, resource), 'prompt');
 
         if (responseType === this.RESPONSE_TYPE.ID_TOKEN_TOKEN) {
+            this.verbose('ID TOKEN TOKEN');
+            this.verbose('Response Type : ' + responseType);
             this._idTokenNonce = this._guid();
             this._saveItem(this.CONSTANTS.STORAGE.NONCE_IDTOKEN, this._idTokenNonce, true);
             urlNavigate += '&nonce=' + encodeURIComponent(this._idTokenNonce);
@@ -581,6 +583,7 @@ var AuthenticationContext = (function () {
      */
     AuthenticationContext.prototype._loadFrameTimeout = function (urlNavigation, frameName, resource) {
         //set iframe session to pending
+        this.verbose(urlNavigation);
         this.verbose('Set loading state to pending for: ' + resource);
         this._saveItem(this.CONSTANTS.STORAGE.RENEW_STATUS + resource, this.CONSTANTS.TOKEN_RENEW_STATUS_IN_PROGRESS);
         this._loadFrame(urlNavigation, frameName);
@@ -662,6 +665,9 @@ var AuthenticationContext = (function () {
             this.registerCallback(this._activeRenewals[resource], resource, callback);
         }
         else {
+            this.verbose('INFORMATION');
+            this.verbose(JSON.stringify(this._user));
+            this.verbose(resource);
             this._requestType = this.REQUEST_TYPE.RENEW_TOKEN;
             if (resource === this.config.clientId) {
                 // App uses idtoken to send to api endpoints
