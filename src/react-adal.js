@@ -4,7 +4,7 @@ import AuthenticationContext_ from './adal.mod';
 
 const isSSR = typeof window === 'undefined';
 
-//fake context on SSR
+// fake context on SSR
 export const AuthenticationContext = isSSR ? () => {} : AuthenticationContext_;
 
 const redirectMessages = [
@@ -55,19 +55,19 @@ export function adalGetToken(authContext, resourceInfo, callback) {
 }
 
 export function runWithAdal(authContext, app, doNotLogin) {
-  //SSR support
+  // SSR support
   if (isSSR) {
     if (doNotLogin) app();
     return;
   }
-  //it must run in iframe too for refreshToken (parsing hash and get token)
+  // it must run in iframe too for refreshToken (parsing hash and get token)
   authContext.handleWindowCallback();
 
   // Clear the resource cache on new login
   // https://github.com/salvoravida/react-adal/issues/68
   authContext.invalidateResourceTokens();
 
-  //prevent iframe double app !!!
+  // prevent iframe double app !!!
   if (window === window.parent) {
     if (!authContext.isCallback(window.location.hash)) {
       // adal sdk assigns clientId if loginResource is not provided
@@ -109,7 +109,7 @@ export const withAdalLogin = (authContext, resourceInfo) => {
           error: null
         };
 
-        //#67 Using react-adal with Server Side Rendering(Next.js)
+        // #67 Using react-adal with Server Side Rendering(Next.js)
         if (!isSSR) {
           adalGetToken(authContext, resourceInfo)
             .then(() => {
@@ -119,8 +119,8 @@ export const withAdalLogin = (authContext, resourceInfo) => {
               const { msg } = error;
               console.log('adalGetToken', error); // eslint-disable-line
 
-              //Avoid the infinite loop when access_denied
-              //https://github.com/salvoravida/react-adal/issues/33
+              // Avoid the infinite loop when access_denied
+              // https://github.com/salvoravida/react-adal/issues/33
               const loginError = authContext.getLoginError();
               const loginWasTriedButFailed =
                 loginError !== undefined &&
