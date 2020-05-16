@@ -4,6 +4,7 @@ import AuthenticationContext from './adal';
  * Validates each resource token in cache againt current user
  */
 AuthenticationContext.prototype.invalidateResourceTokens = function () {
+  if (!this.config.endpoints) { return; }
   const idToken = this._getItem(this.CONSTANTS.STORAGE.IDTOKEN);
   if (!idToken) { return; }
   const { upn } = this._extractIdToken(idToken);
