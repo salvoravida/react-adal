@@ -21,7 +21,7 @@ AuthenticationContext.prototype._clearStaleResourceToken = function (resource, c
   const resourceToken = this.getCachedToken(resource);
   if (resourceToken) {
     const { upn } = this._extractIdToken(resourceToken);
-    if (upn !== currentUserUpn) {
+    if (upn.toLowerCase() !== currentUserUpn.toLowerCase()) {
       this.info(`Clearing invalid cache of resource ${resource}`);
       this.clearCacheForResource(resource);
     }
