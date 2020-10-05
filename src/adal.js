@@ -135,10 +135,6 @@ var AuthenticationContext = (function () {
         this._openedWindows = [];
         this._requestType = this.REQUEST_TYPE.LOGIN;
         window._adalInstance = this;
-        this._storageSupport = {
-            localStorage: null,
-            sessionStorage: null
-        };
 
         // validate before constructor assignments
         if (config.displayCall && typeof config.displayCall !== 'function') {
@@ -813,7 +809,6 @@ var AuthenticationContext = (function () {
      * Clears cache items.
      */
     AuthenticationContext.prototype.clearCache = function () {
-        this._user = null;
         this._saveItem(this.CONSTANTS.STORAGE.LOGIN_REQUEST, '');
         this._saveItem(this.CONSTANTS.STORAGE.ANGULAR_LOGIN_REQUEST, '');
         this._saveItem(this.CONSTANTS.STORAGE.SESSION_STATE, '');
@@ -860,6 +855,7 @@ var AuthenticationContext = (function () {
      */
     AuthenticationContext.prototype.logOut = function () {
         this.clearCache();
+        this._user = null;
         var urlNavigate;
 
         if (this.config.logOutUri) {
@@ -928,8 +924,7 @@ var AuthenticationContext = (function () {
      * @ignore
      */
     AuthenticationContext.prototype._addHintParameters = function (urlNavigate) {
-
-        //If you don't use prompt=none, then if the session does not exist, there will be a failure.
+        //If you don�t use prompt=none, then if the session does not exist, there will be a failure.
         //If sid is sent alongside domain or login hints, there will be a failure since request is ambiguous.
         //If sid is sent with a prompt value other than none or attempt_none, there will be a failure since the request is ambiguous.
 
@@ -1103,7 +1098,7 @@ var AuthenticationContext = (function () {
         if (requestNonce) {
             requestNonce = requestNonce.split(this.CONSTANTS.CACHE_DELIMETER);
             for (var i = 0; i < requestNonce.length; i++) {
-                if (requestNonce[i] === user.profile.nonce) {
+                if (requestNonce[i] && requestNonce[i] === user.profile.nonce) {
                     return true;
                 }
             }
@@ -1122,7 +1117,7 @@ var AuthenticationContext = (function () {
         if (loginStates) {
             loginStates = loginStates.split(this.CONSTANTS.CACHE_DELIMETER);
             for (var i = 0; i < loginStates.length; i++) {
-                if (loginStates[i] === requestInfo.stateResponse) {
+                if (loginStates[i] && loginStates[i] === requestInfo.stateResponse) {
                     requestInfo.requestType = this.REQUEST_TYPE.LOGIN;
                     requestInfo.stateMatch = true;
                     return true;
@@ -1135,7 +1130,7 @@ var AuthenticationContext = (function () {
         if (acquireTokenStates) {
             acquireTokenStates = acquireTokenStates.split(this.CONSTANTS.CACHE_DELIMETER);
             for (var i = 0; i < acquireTokenStates.length; i++) {
-                if (acquireTokenStates[i] === requestInfo.stateResponse) {
+                if (acquireTokenStates[i] && acquireTokenStates[i] === requestInfo.stateResponse) {
                     requestInfo.requestType = this.REQUEST_TYPE.RENEW_TOKEN;
                     requestInfo.stateMatch = true;
                     return true;
@@ -1218,16 +1213,17 @@ var AuthenticationContext = (function () {
                             this._user = null;
                         } else {
                             this._saveItem(this.CONSTANTS.STORAGE.IDTOKEN, requestInfo.parameters[this.CONSTANTS.ID_TOKEN]);
-                            // Save idtoken as access token for app itself
-                            var idTokenResource = this.config.loginResource ? this.config.loginResource : this.config.clientId;
 
-                            if (!this._hasResource(idTokenResource)) {
+                            // Save idtoken as access token for app itself
+                            resource = this.config.loginResource ? this.config.loginResource : this.config.clientId;
+
+                            if (!this._hasResource(resource)) {
                                 keys = this._getItem(this.CONSTANTS.STORAGE.TOKEN_KEYS) || '';
-                                this._saveItem(this.CONSTANTS.STORAGE.TOKEN_KEYS, keys + idTokenResource + this.CONSTANTS.RESOURCE_DELIMETER);
+                                this._saveItem(this.CONSTANTS.STORAGE.TOKEN_KEYS, keys + resource + this.CONSTANTS.RESOURCE_DELIMETER);
                             }
 
-                            this._saveItem(this.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + idTokenResource, requestInfo.parameters[this.CONSTANTS.ID_TOKEN]);
-                            this._saveItem(this.CONSTANTS.STORAGE.EXPIRATION_KEY + idTokenResource, this._user.profile.exp);
+                            this._saveItem(this.CONSTANTS.STORAGE.ACCESS_TOKEN_KEY + resource, requestInfo.parameters[this.CONSTANTS.ID_TOKEN]);
+                            this._saveItem(this.CONSTANTS.STORAGE.EXPIRATION_KEY + resource, this._user.profile.exp);
                         }
                     }
                     else {
@@ -1689,7 +1685,7 @@ var AuthenticationContext = (function () {
                 ifr.setAttribute('aria-hidden', 'true');
                 ifr.style.visibility = 'hidden';
                 ifr.style.position = 'absolute';
-                ifr.style.width = ifr.style.height = ifr.style.borderWidth = '0px';
+                ifr.style.width = ifr.style.height = ifr.borderWidth = '0px';
 
                 adalFrame = document.getElementsByTagName('body')[0].appendChild(ifr);
             }
@@ -1764,44 +1760,20 @@ var AuthenticationContext = (function () {
     };
 
     /**
-     * Returns true if the browser supports given storage type
-     * @ignore
-     */
-    AuthenticationContext.prototype._supportsStorage = function(storageType) {
-        if (!(storageType in this._storageSupport)) {
-            return false;
-        }
-
-        if (this._storageSupport[storageType] !== null) {
-            return this._storageSupport[storageType];
-        }
-
-        try {
-            if (!(storageType in window) || window[storageType] === null) {
-                throw new Error();
-            }
-            var testKey = '__storageTest__';
-            window[storageType].setItem(testKey, 'A');
-            if (window[storageType].getItem(testKey) !== 'A') {
-                throw new Error();
-            }
-            window[storageType].removeItem(testKey);
-            if (window[storageType].getItem(testKey)) {
-                throw new Error();
-            }
-            this._storageSupport[storageType] = true;
-        } catch (e) {
-            this._storageSupport[storageType] = false;
-        }
-        return this._storageSupport[storageType];
-    }
-
-    /**
      * Returns true if browser supports localStorage, false otherwise.
      * @ignore
      */
-    AuthenticationContext.prototype._supportsLocalStorage = function () {        
-        return this._supportsStorage('localStorage');
+    AuthenticationContext.prototype._supportsLocalStorage = function () {
+        try {
+            if (!window.localStorage) return false; // Test availability
+            window.localStorage.setItem('storageTest', 'A'); // Try write
+            if (window.localStorage.getItem('storageTest') != 'A') return false; // Test read/write
+            window.localStorage.removeItem('storageTest'); // Try delete
+            if (window.localStorage.getItem('storageTest')) return false; // Test delete
+            return true; // Success
+        } catch (e) {
+            return false;
+        }
     };
 
     /**
@@ -1809,7 +1781,16 @@ var AuthenticationContext = (function () {
      * @ignore
      */
     AuthenticationContext.prototype._supportsSessionStorage = function () {
-        return this._supportsStorage('sessionStorage');
+        try {
+            if (!window.sessionStorage) return false; // Test availability
+            window.sessionStorage.setItem('storageTest', 'A'); // Try write
+            if (window.sessionStorage.getItem('storageTest') != 'A') return false; // Test read/write
+            window.sessionStorage.removeItem('storageTest'); // Try delete
+            if (window.sessionStorage.getItem('storageTest')) return false; // Test delete
+            return true; // Success
+        } catch (e) {
+            return false;
+        }
     };
 
     /**
