@@ -1,6 +1,6 @@
 {
   "name": "react-adal",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Azure Active Directory (ADAL) support for ReactJS",
   "main": "lib/react-adal.js",
   "scripts": {
